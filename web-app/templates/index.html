@@ -1,0 +1,24 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>view mongodb data</title>
+</head>
+<body>
+    <h1>This is just for demonstration ... view all data in mongodb</h1>
+    <ul>
+        {% for item in data %}
+            <li>{{ item.text }}</li>
+        {% endfor %}
+    </ul>
+
+    <form method="post" action="{{ url_for('add') }}">
+        <label for="text">Enter Text:</label>
+        <input type="text" id="text" name="text" required>
+        <button type="submit">Add Text</button>
+    </form>
+</body>
+</html>
