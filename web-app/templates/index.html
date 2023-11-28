@@ -5,20 +5,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>view mongodb data</title>
+    <title>View MongoDB Data</title>
+    <style>
+        video {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        canvas {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>This is just for demonstration ... view all data in mongodb</h1>
+    <h1>This is just for demonstration... view all data in MongoDB</h1>
     <ul>
         {% for item in data %}
             <li>{{ item.text }}</li>
         {% endfor %}
     </ul>
 
+    <h2>Webcam Capture</h2>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="captureBtn">Capture Image</button>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    <img id="capturedImage" src="" alt="Captured Image" style="display:none;">
+
     <form method="post" action="{{ url_for('add') }}">
         <label for="text">Enter Text:</label>
         <input type="text" id="text" name="text" required>
         <button type="submit">Add Text</button>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const capturedImage = document.getElementById('capturedImage');
+            const captureBtn = document.getElementById('captureBtn');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    video.srcObject = stream;
+                })
+                .catch((error) => {
+                    console.error('Error accessing webcam:', error);
+                });
+
+            captureBtn.addEventListener('click', () => {
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageDataUrl = canvas.toDataURL('image/png');
+                capturedImage.src = imageDataUrl;
+                //NEED TO SEND TO BACKEND LATER
+            });
+        });
+    </script>
 </body>
 </html>
