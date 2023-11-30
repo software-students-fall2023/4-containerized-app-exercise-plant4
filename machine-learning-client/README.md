@@ -1,0 +1,1 @@
+This can probably run on all platforms, but I am not super sure. I had to debug compatibility issues a lot, so it's also possible that the container just runs on apple M1 chip (hope not). Let me know if there is any issue! I'll fix the dockerfile then.
