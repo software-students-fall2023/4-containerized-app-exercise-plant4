@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
 from retry import retry
 import pymongo.errors
+import os
+
 
 app = Flask(__name__)
 
@@ -36,6 +38,20 @@ def add():
 
     # Redirect to the home page
     return redirect('/')
+
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    # Get the video file from the request
+    video_file = request.files['video']
+
+    # Read the binary data from the file
+    video_binary = video_file.read()
+
+    # Save the video to MongoDB
+    collection.insert_one({'video': video_binary})
+
+    return "Video uploaded successfully!"
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

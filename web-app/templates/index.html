@@ -5,59 +5,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View MongoDB Data</title>
-    <style>
-        video {
-            width: 100%;
-            max-width: 640px;
-        }
-
-        canvas {
-            display: none;
-        }
-    </style>
+    <title>Webcam Video Upload</title>
 </head>
 <body>
-    <h1>This is just for demonstration... view all data in MongoDB</h1>
-    <ul>
-        {% for item in data %}
-            <li>{{ item.text }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Webcam Capture</h2>
+    <h1>Record and Upload Video</h1>
     <video id="video" width="640" height="480" autoplay></video>
-    <button id="captureBtn">Capture Image</button>
-    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
-    <img id="capturedImage" src="" alt="Captured Image" style="display:none;">
-
-    <form method="post" action="{{ url_for('add') }}">
-        <label for="text">Enter Text:</label>
-        <input type="text" id="text" name="text" required>
-        <button type="submit">Add Text</button>
-    </form>
+    <button id="startRecordingBtn">Start Recording</button>
+    <button id="stopRecordingBtn" style="display:none;">Stop Recording</button>
+    <button id="uploadBtn" style="display:none;">Upload Video</button>
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const capturedImage = document.getElementById('capturedImage');
-            const captureBtn = document.getElementById('captureBtn');
+            const startRecordingBtn = document.getElementById('startRecordingBtn');
+            const stopRecordingBtn = document.getElementById('stopRecordingBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            let mediaRecorder;
+            let chunks = [];
 
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then((stream) => {
                     video.srcObject = stream;
+                    mediaRecorder = new MediaRecorder(stream);
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            chunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const videoBlob = new Blob(chunks, { type: 'video/mp4' });
+                        const videoUrl = URL.createObjectURL(videoBlob);
+                        video.src = videoUrl;
+                        // Display the Upload button
+                        uploadBtn.style.display = 'inline-block';
+
+                        // Reset the recording chunks
+                        chunks = [];
+                    };
                 })
                 .catch((error) => {
                     console.error('Error accessing webcam:', error);
                 });
 
-            captureBtn.addEventListener('click', () => {
-                const context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageDataUrl = canvas.toDataURL('image/png');
-                capturedImage.src = imageDataUrl;
-                //NEED TO SEND TO BACKEND LATER
+            startRecordingBtn.addEventListener('click', () => {
+                mediaRecorder.start();
+                startRecordingBtn.style.display = 'none';
+                stopRecordingBtn.style.display = 'inline-block';
+
+                // Record for 1 second (1000 milliseconds)
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    stopRecordingBtn.style.display = 'none';
+                }, 1000);
+            });
+
+            uploadBtn.addEventListener('click', () => {
+                const videoBlob = new Blob(chunks, { type: 'video/mp4' });
+                const formData = new FormData();
+                formData.append('video', videoBlob);
+
+                // Send the video data to the backend for further processing
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.text())
+                .then(message => {
+                    console.log(message);
+                    // Handle success or display a message to the user
+                })
+                .catch(error => console.error('Error uploading video:', error));
             });
         });
     </script>
