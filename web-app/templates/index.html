@@ -1,65 +1,70 @@
-<!-- templates/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View MongoDB Data</title>
-    <style>
-        video {
-            width: 100%;
-            max-width: 640px;
-        }
-
-        canvas {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <h1>This is just for demonstration... view all data in MongoDB</h1>
-    <ul>
-        {% for item in data %}
-            <li>{{ item.text }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Webcam Capture</h2>
-    <video id="video" width="640" height="480" autoplay></video>
-    <button id="captureBtn">Capture Image</button>
-    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
-    <img id="capturedImage" src="" alt="Captured Image" style="display:none;">
-
-    <form method="post" action="{{ url_for('add') }}">
-        <label for="text">Enter Text:</label>
-        <input type="text" id="text" name="text" required>
-        <button type="submit">Add Text</button>
-    </form>
-
+    <title>Webcam Photo App</title>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
+        document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
-            const capturedImage = document.getElementById('capturedImage');
-            const captureBtn = document.getElementById('captureBtn');
+            const captureButton = document.getElementById('capture');
+            const saveButton = document.getElementById('save');
+            let stream;
 
+            // Access webcam
             navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
-                    video.srcObject = stream;
+                .then((mediaStream) => {
+                    video.srcObject = mediaStream;
+                    stream = mediaStream;
                 })
                 .catch((error) => {
                     console.error('Error accessing webcam:', error);
                 });
 
-            captureBtn.addEventListener('click', () => {
+            // Capture photo from webcam
+            captureButton.addEventListener('click', () => {
                 const context = canvas.getContext('2d');
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageDataUrl = canvas.toDataURL('image/png');
-                capturedImage.src = imageDataUrl;
-                //NEED TO SEND TO BACKEND LATER
+            });
+
+            // Save photo to MongoDB
+            saveButton.addEventListener('click', () => {
+                const photoDataUrl = canvas.toDataURL('image/png');
+
+                // Send photo to backend for saving to MongoDB
+                fetch('/save_photo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ photoDataUrl }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Photo saved to MongoDB:', data);
+                })
+                .catch((error) => {
+                    console.error('Error saving photo:', error);
+                });
+            });
+
+            // Stop webcam when leaving the page
+            window.addEventListener('beforeunload', () => {
+                if (stream) {
+                    stream.getTracks().forEach((track) => {
+                        track.stop();
+                    });
+                }
             });
         });
     </script>
+</head>
+<body>
+    <h1>Webcam Photo App</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="capture">Capture Photo</button>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <button id="save">Save to MongoDB</button>
 </body>
 </html>

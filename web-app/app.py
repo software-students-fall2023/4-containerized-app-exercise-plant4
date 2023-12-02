@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
 from retry import retry
 import pymongo.errors
@@ -13,29 +13,26 @@ def connect_to_mongo():
 client = connect_to_mongo()
 db = client["mydatabase"]
 
-# Check if the collection exists
+#check if the collection exists
 if "mycollection" not in db.list_collection_names():
-    # Create the collection if it doesn't exist
+    #create the collection if it doesn't exist
     db.create_collection("mycollection")
 
 collection = db["mycollection"]
 
 @app.route('/')
 def index():
-    # Retrieve data from MongoDB
-    data = collection.find()
-    return render_template('index.html', data=data)
+    return render_template('index.html')
 
-@app.route('/add', methods=['POST'])
-def add():
-    # Get text from the form
-    text = request.form.get('text')
+@app.route('/save_photo', methods=['POST'])
+def save_photo():
+    data = request.json
+    photo_data_url = data.get('photoDataUrl')
 
-    # Insert text into MongoDB
-    collection.insert_one({'text': text})
-
-    # Redirect to the home page
-    return redirect('/')
+    #SAVE PHOTO TO DATABASE
+    collection.insert_one({'photoDataUrl': photo_data_url})
+    
+    return jsonify({'message': 'Photo saved successfully'})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
