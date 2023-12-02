@@ -3,37 +3,37 @@ import mediapipe
 
 # --------- DB
 
-from flask import Flask, render_template, request, redirect, url_for
-from pymongo import MongoClient
-from retry import retry
-import pymongo.errors
+# from flask import Flask, render_template, request, redirect, url_for
+# from pymongo import MongoClient
+# from retry import retry
+# import pymongo.errors
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-@retry(pymongo.errors.ServerSelectionTimeoutError, delay=1, tries=30)
-def connect_to_mongo():
-    return MongoClient("mongodb://mongodb:27017/")
+# @retry(pymongo.errors.ServerSelectionTimeoutError, delay=1, tries=30)
+# def connect_to_mongo():
+#     return MongoClient("mongodb://mongodb:27017/")
 
-# MongoDB configuration
-client = connect_to_mongo()
-db = client["mydatabase"]
+# # MongoDB configuration
+# client = connect_to_mongo()
+# db = client["mydatabase"]
 
-# Check if the collection exists
-if "mycollection" not in db.list_collection_names():
-    # Create the collection if it doesn't exist
-    db.create_collection("mycollection")
+# # Check if the collection exists
+# if "mycollection" not in db.list_collection_names():
+#     # Create the collection if it doesn't exist
+#     db.create_collection("mycollection")
 
-collection = db["mycollection"]
+# collection = db["mycollection"]
 
-def insert_result_to_db(move):
-    collection.insert_one({'gesture': move})
+# def insert_result_to_db(move):
+#     collection.insert_one({'gesture': move})
 
-def print_collection_contents():
-    cursor = collection.find()
+# def print_collection_contents():
+#     cursor = collection.find()
 
-    print("Contents of the MongoDB collection:")
-    for document in cursor:
-        print(document['gesture'])
+#     print("Contents of the MongoDB collection:")
+#     for document in cursor:
+#         print(document['gesture'])
 
 
 # --------- DB
@@ -105,4 +105,4 @@ if __name__ == "__main__":
     image_path = "hand.png"
     result = analyze_image(image_path)
     print("Final recognized gesture:", result)
-    print_collection_contents()
+    # print_collection_contents()
