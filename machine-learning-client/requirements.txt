@@ -1,2 +1,5 @@
 opencv-python
 mediapipe
+Flask==3.0.0
+pymongo==4.5.0
+retry==0.9.2
