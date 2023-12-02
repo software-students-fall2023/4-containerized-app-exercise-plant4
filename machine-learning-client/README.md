@@ -3,8 +3,13 @@ Note:
 
 (2) Not connected to db. For now, if u wanna test, just create a video locally, name it video.mp4, and put it in /ml_client.
 
-To build:
+To build: 33.6 sec
 docker build -t ml_client .
+<!-- docker build --no-cache -t ml_client . -->
 
 To run:
 docker run -it --rm ml_client
+
+
+docker-compose build
+docker-compose up
