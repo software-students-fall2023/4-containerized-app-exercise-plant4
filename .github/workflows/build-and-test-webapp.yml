@@ -22,6 +22,7 @@ jobs:
 
     - name: Build Docker image
       run: docker build -t web-app -f web-app/Dockerfile .
+      working-directory: .
 
     - name: Run tests
       run: docker run web-app python -m unittest discover -s tests -p '*_test.py'
