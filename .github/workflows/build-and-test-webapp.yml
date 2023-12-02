@@ -7,9 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      - name: docker
+      docker:
         image: docker:20.10.8
-        command: ["dockerd-entrypoint.sh"]
         options: --privileged
 
     steps:
