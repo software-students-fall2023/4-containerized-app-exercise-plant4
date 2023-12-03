@@ -2,7 +2,7 @@
 FROM python:3.12.0
 
 # Set the working directory to /app
-WORKDIR /web-app
+WORKDIR /web_app
 
 # Copy the dependencies file to the working directory
 COPY requirements.txt .
