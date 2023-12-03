@@ -34,6 +34,13 @@ def save_photo():
     
     return jsonify({'message': 'Photo saved successfully'})
 
+@app.route('/view_data')
+def view_data():
+    #THIS NEEDS TO BE CHANGED EVENTUALLY EVEN ML DATA IS RETURNED!!!
+    data_from_mongo = list(collection.find())
+
+    return render_template('view_data.html', data=data_from_mongo)
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
 
