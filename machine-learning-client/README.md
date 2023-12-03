@@ -1,15 +1,20 @@
-Note: 
-(1) I hope this can run on all platforms - not sure. I had to debug compatibility issues a lot, so it's also possible that the container just runs on apple M1 chip (hope not). Let me know if there is any issue! I'll fix the dockerfile then. 
 
-(2) Not connected to db. For now, if u wanna test, just create a video locally, name it video.mp4, and put it in /ml_client.
-
-To build: 33.6 sec
+To build: 
 docker build -t ml_client .
 <!-- docker build --no-cache -t ml_client . -->
 
 To run:
-docker run -it --rm ml_client
+<!-- docker run -it ml_client -->
+docker run -it --rm --network=my_network ml_client
+
+restart db and run:
+docker stop mongodb
+docker rm mongodb
+docker run -d --network=my_network --name=mongodb mongo:latest
+docker run -it --rm --network=my_network ml_client
 
 
+web-app:
 docker-compose build
 docker-compose up
+
