@@ -29,10 +29,11 @@ def save_photo():
     data = request.json
     photo_data_url = data.get('photoDataUrl')
 
-    #SAVE PHOTO TO DATABASE
-    collection.insert_one({'photoDataUrl': photo_data_url})
+    # SAVE PHOTO TO DATABASE
+    collection.insert_one({'photoDataUrl': photo_data_url, 'processed': False})
     
-    return jsonify({'message': 'Photo saved successfully'})
+    return 'Photo saved successfully!'
+
 
 @app.route('/view_data')
 def view_data():
