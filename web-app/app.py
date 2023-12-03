@@ -20,6 +20,7 @@ if "mycollection" not in db.list_collection_names():
 
 collection = db["mycollection"]
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -38,7 +39,8 @@ def save_photo():
 @app.route('/view_data')
 def view_data():
     #THIS NEEDS TO BE CHANGED EVENTUALLY EVEN ML DATA IS RETURNED!!!
-    data_from_mongo = list(collection.find())
+    collection2=db["mlresults"]
+    data_from_mongo = list(collection2.find())
 
     return render_template('view_data.html', data=data_from_mongo)
 
