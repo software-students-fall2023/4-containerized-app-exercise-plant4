@@ -151,15 +151,15 @@ def analyze_image(decoded_image):
     return move
 
 if __name__ == "__main__":
-    import json
-    with open('message.txt', 'r') as file:
-        file_content = file.read()
+    # import json
+    # with open('message.txt', 'r') as file:
+    #     file_content = file.read()
 
-    # Parse the JSON content
-    json_data = json.loads(file_content)
+    # # Parse the JSON content
+    # json_data = json.loads(file_content)
 
-    # Access and print the content of the 'PhotoUrl' key
-    photoBase64 = json_data["photoDataUrl"]
+    # # Access and print the content of the 'PhotoUrl' key
+    # photoBase64 = json_data["photoDataUrl"]
 
 
     with open('url.txt', 'r') as file:
