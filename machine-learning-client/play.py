@@ -7,7 +7,6 @@ from bson import ObjectId
 
 moves = ["Rock", "Paper", "Scissors"]
 wins = {"Rock": "Scissors", "Paper": "Rock", "Scissors": "Paper"}
-docCt = 0
 
 # ---------------- DB -----------------
 
@@ -71,24 +70,6 @@ def print_one(document):
         f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}",
         flush=True,
     )
-
-
-def get_new_input():
-    global docCt
-    try:
-        res = collection_raw.find().sort("_id", -1)
-
-        if collection_raw.count_documents({}) > docCt:
-            docCt += 1
-            latest_document = res[0]
-            latest_document_id = str(latest_document["_id"])
-            return latest_document
-        else:
-            return None  # or any other value indicating no result
-
-    except Exception as e:
-        print(f"Error getting new input: {e}")
-        return None
 
 
 def print_raw_collection_contents():
@@ -213,8 +194,24 @@ def analyze_image(decoded_image):
 
 
 if __name__ == "__main__":
+    docCt = 0
     while True:
-        new_photo = get_new_input()
+        new_photo = None
+        try:
+            res = collection_raw.find().sort("_id", -1)
+
+            if collection_raw.count_documents({}) > docCt:
+                docCt += 1
+                latest_document = res[0]
+                latest_document_id = str(latest_document["_id"])
+                new_photo =latest_document
+            else:
+                new_photo =None  # or any other value indicating no result
+
+        except Exception as e:
+            print(f"Error getting new input: {e}")
+            new_photo = None
+
         if new_photo:
             photo_url = new_photo["photoDataUrl"]
             decoded_image = decode_photo_data_url(photo_url)
