@@ -23,4 +23,4 @@ jobs:
           pipenv run black .
       - name: Lint with pylint
         if: ${{ hashFiles('**/*.py') != '' }}
-        run: pipenv run pylint **/*.py
+        run: pipenv run pylint --fix **/*.py
