@@ -2,6 +2,7 @@
 This module implements a Rock, Paper, Scissors game using hand gestures.
 """
 
+# pylint: disable=import-error
 import random
 import base64
 import mediapipe
