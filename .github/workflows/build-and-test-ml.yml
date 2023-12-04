@@ -34,3 +34,9 @@ jobs:
 
     - name: Run tests
       run: pytest
+
+    - name: Pytest Coverage
+      run: |
+        coverage run -m pytest
+        coverage report -m machine_learning_client/tests/test_play.py
+      
