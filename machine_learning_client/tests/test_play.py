@@ -1,10 +1,6 @@
 import pytest
 from unittest.mock import patch
 
-# # # test_play.py
-# # import sys
-# # sys.path.append('../')  # Adjust the path accordingly
-
 # from play import get_comp_move, calculate_game_state, analyze_image
 from play import get_comp_move, calculate_game_state
 
