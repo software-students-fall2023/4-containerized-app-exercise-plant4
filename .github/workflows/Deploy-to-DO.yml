@@ -22,6 +22,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: root
           password: ${{ secrets.SSH_PASS }}
+          # from here... do something 
           script: |
             ls
-            # from here... do something 
+            
