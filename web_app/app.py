@@ -2,21 +2,21 @@
 Backend for the web app.
 """
 
-from flask import Flask, render_template, request, jsonify
+# pylint: disable=import-error
+
+from flask import Flask, render_template, request
 from pymongo import MongoClient
 import pymongo
 
 app = Flask(__name__)
 
-"""
-    This will attempt connect to the database.
 
+def connect_to_mongo():
+    """
+    This will attempt connect to the database.
     Returns:
         client: MongoDB client.
     """
-
-
-def connect_to_mongo():
     return MongoClient("mongodb://mongodb:27017/")
 
 
