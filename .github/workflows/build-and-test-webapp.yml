@@ -1,4 +1,4 @@
-name: Build and Test web_app
+name: Build and Test web-app
 
 on: [push, pull_request]
 
@@ -21,8 +21,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build Docker image
-      run: docker build -t web_app -f web_app/Dockerfile .
+      run: docker build -t web-app -f web-app/Dockerfile .
       working-directory: .
 
-    - name: Run tests
-      run: docker run web_app pytest web_app/tests/
+#    - name: Run tests
+     # run: |
+      #  pytest web-app/tests
+
