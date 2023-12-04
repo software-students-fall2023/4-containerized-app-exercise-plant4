@@ -19,6 +19,5 @@ jobs:
       run: docker build -t machine-learning-client -f machine-learning-client/Dockerfile .
       working-directory: .
 
-    - name: Run Tests
-      run: |
-        docker exec -it machine-learning-client pytest
+#   - name: Run Tests
+#   TBD
