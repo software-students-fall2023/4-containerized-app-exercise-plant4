@@ -16,9 +16,9 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Log in to Digital Ocean Container Registry
-        run: echo ${{ secrets.DO_TOKEN }} | docker login registry.digitalocean.com -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
+      - name: Log in to Dockers
+        run: docker login -u=${{ secrets.DOCKER_USERNAME }}
+        
       - name: CICD
         uses: appleboy/ssh-action@v0.1.2
         with:
@@ -27,14 +27,5 @@ jobs:
           password: ${{ secrets.SSH_PASS }}
           # from here... do something 
           script: |
-            ls
-      - name: CICD
-        uses: appleboy/ssh-action@v0.1.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: root
-          password: ${{ secrets.SSH_PASS }}
-          # from here... do something 
-          script: |
-            ls
+            docker pull my_repository
             
