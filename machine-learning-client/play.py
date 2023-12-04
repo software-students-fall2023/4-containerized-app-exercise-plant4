@@ -1,26 +1,34 @@
-import cv2
-import mediapipe
 import random
-import time
-import json
-from bson import ObjectId
+import mediapipe
+# import time
+# import json
+# from bson import ObjectId
+from flask import Flask 
+import pymongo
+from pymongo import MongoClient
+# import pymongo.errors
+import base64
+# from io import BytesIO
+# from PIL import Image
+import cv2
+import numpy as np
 
 moves = ["Rock", "Paper", "Scissors"]
 wins = {"Rock": "Scissors", "Paper": "Rock", "Scissors": "Paper"}
 
 # ---------------- DB -----------------
 
-from flask import Flask, render_template, request, redirect, url_for
-from pymongo import MongoClient
-import pymongo.errors
-
 app = Flask(__name__)
 
-
 def connect_to_mongo():
+    """
+    Connects to MongoDB and returns the client.
+
+    Returns:
+        MongoClient: MongoDB client.
+    """
     print("connected", flush=True)
     return MongoClient("mongodb://mongodb:27017/")
-
 
 # MongoDB configuration
 client = connect_to_mongo()
@@ -39,58 +47,75 @@ if "mycollection" not in db.list_collection_names():
 
 collection_raw = db["mycollection"]
 
-
 def insert_result_to_db(result):
+    """
+    Inserts a result document into the MongoDB collection.
+
+    Args:
+        result (dict): Result document to be inserted.
+    """
     collection.insert_one(result)
 
-
 def print_collection_contents():
+    """
+    Prints the contents of the MongoDB collection.
+    """
     cursor = collection.find()
 
     print("Contents of the MongoDB collection:")
     for document in cursor:
         # Use get() method to safely access the fields
-        player_gesture = document.get("playerGesture", "N/A")
-        comp_gesture = document.get("compGesture", "N/A")
-        winner = document.get("winner", "N/A")
-        image_base64 = document.get("image", None)
+        player_gesture_content = document.get("playerGesture", "N/A")
+        comp_gesture_content = document.get("compGesture", "N/A")
+        winner_content = document.get("winner", "N/A")
+#        image_base64_content = document.get("image", None)
 
         print(
-            f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}"
+            f"Player Gesture: {player_gesture_content}, Comp Gesture: {comp_gesture_content}, Winner: {winner_content}"
         )
 
-
 def print_one(document):
-    player_gesture = document.get("playerGesture", "N/A")
-    comp_gesture = document.get("compGesture", "N/A")
-    winner = document.get("winner", "N/A")
-    image_base64 = document.get("image", None)
+    """
+    Prints details of a single document.
+
+    Args:
+        document (dict): Document to be printed.
+    """
+    player_gesture_content_one = document.get("playerGesture", "N/A")
+    comp_gesture_content_one = document.get("compGesture", "N/A")
+    winner_content_one = document.get("winner", "N/A")
+    # image_base64_content_one = document.get("image", None)
 
     print(
-        f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}",
+        f"Player Gesture: {player_gesture_content_one}, Comp Gesture: {comp_gesture_content_one}, Winner: {winner_content_one}",
         flush=True,
     )
 
-
 def print_raw_collection_contents():
+    """
+    Prints the contents of the RAW MongoDB collection.
+    """
     cursor = collection_raw.find()
 
     print("Contents of the RAW collection:")
     for document in cursor:
         # Use get() method to safely access the fields
-        id = document.get("_id", "N/A")
-        print(f"id: {id}")
-
+        document_id = document.get("_id", "N/A")
+        print(f"id: {document_id}")
 
 # ---------------- GAME ------------------
 # decode
-import base64
-from io import BytesIO
-from PIL import Image
-import numpy as np
-
 
 def decode_photo_data_url(photo_data_url):
+    """
+    Decodes the photo data URL and returns the image frame.
+
+    Args:
+        photo_data_url (str): Photo data URL.
+
+    Returns:
+        np.ndarray: Decoded image frame.
+    """
     _, encoded_data = photo_data_url.split(",", 1)
 
     # Decode the Base64-encoded data
@@ -100,16 +125,29 @@ def decode_photo_data_url(photo_data_url):
     frame = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
     return frame
 
-
 # ---------------
 
-
 def get_comp_move():
+    """
+    Generates a random move for the computer.
+
+    Returns:
+        str: Computer's move.
+    """
     comp = random.randint(0, 2)
     return moves[comp]
 
-
 def calculate_game_state(comp, move):
+    """
+    Calculates the game state based on computer and player moves.
+
+    Args:
+        comp (str): Computer's move.
+        move (str): Player's move.
+
+    Returns:
+        int: Game state (-1: gesture not detected, 0: tie, 1: player win, 2: computer win).
+    """
     if move not in wins:
         return -1  # gesture not detected
 
@@ -121,26 +159,53 @@ def calculate_game_state(comp, move):
 
     return 2  # computer win
 
-
 def get_finger_status(hands_module, hand_landmarks, finger_name):
+    """
+    Gets the status of a finger based on hand landmarks.
+
+    Args:
+        hands_module: Mediapipe Hands module.
+        hand_landmarks: Hand landmarks data.
+        finger_name (str): Name of the finger.
+
+    Returns:
+        bool: True if finger is up, False otherwise.
+    """
     finger_id_map = {"INDEX": 8, "MIDDLE": 12, "RING": 16, "PINKY": 20}
 
     finger_tip_y = hand_landmarks.landmark[finger_id_map[finger_name]].y
-    finger_dip_y = hand_landmarks.landmark[finger_id_map[finger_name] - 1].y
+    # finger_dip_y = hand_landmarks.landmark[finger_id_map[finger_name] - 1].y
     finger_mcp_y = hand_landmarks.landmark[finger_id_map[finger_name] - 2].y
 
     return finger_tip_y < finger_mcp_y
 
-
 def get_thumb_status(hands_module, hand_landmarks):
+    """
+    Gets the status of the thumb based on hand landmarks.
+
+    Args:
+        hands_module: Mediapipe Hands module.
+        hand_landmarks: Hand landmarks data.
+
+    Returns:
+        bool: True if thumb is up, False otherwise.
+    """
     thumb_tip_x = hand_landmarks.landmark[hands_module.HandLandmark.THUMB_TIP].x
     thumb_mcp_x = hand_landmarks.landmark[hands_module.HandLandmark.THUMB_TIP - 2].x
     thumb_ip_x = hand_landmarks.landmark[hands_module.HandLandmark.THUMB_TIP - 1].x
 
     return thumb_tip_x > thumb_ip_x > thumb_mcp_x
 
-
 def analyze_image(decoded_image):
+    """
+    Analyzes the hand gesture in the image and determines the corresponding move.
+
+    Args:
+        decoded_image: Decoded image frame.
+
+    Returns:
+        str: Recognized move ("Rock", "Paper", "Scissors", or "UNKNOWN").
+    """
     hands_module = mediapipe.solutions.hands
 
     # frame = cv2.imread(decoded_image)
@@ -154,8 +219,8 @@ def analyze_image(decoded_image):
     ) as hands:
         try:
             results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-        except cv2.error as e:
-            print(f"OpenCV Error: {e}")
+        except cv2.error as cv2_ex:
+            print(f"OpenCV Error: {cv2_ex}")
             return "UNKNOWN"
 
         move = "UNKNOWN"
@@ -192,35 +257,35 @@ def analyze_image(decoded_image):
 
     return move
 
-
 if __name__ == "__main__":
-    docCt = 0
+    # pylint: disable=invalid-name
+    doc_count = 0
     while True:
         new_photo = None
         try:
             res = collection_raw.find().sort("_id", -1)
 
-            if collection_raw.count_documents({}) > docCt:
-                docCt += 1
+            if collection_raw.count_documents({}) > doc_count:
+                doc_count += 1
                 latest_document = res[0]
-                latest_document_id = str(latest_document["_id"])
-                new_photo =latest_document
+                latest_document_id = str(latest_document.get("_id", None))
+                new_photo = latest_document
             else:
-                new_photo =None  # or any other value indicating no result
+                new_photo = None  # or any other value indicating no result
 
-        except Exception as e:
-            print(f"Error getting new input: {e}")
+        except pymongo.errors.PyMongoError as ex:
+            print(f"Error getting new input: {ex}")
             new_photo = None
 
         if new_photo:
-            photo_url = new_photo["photoDataUrl"]
-            decoded_image = decode_photo_data_url(photo_url)
-            playerGesture = analyze_image(decoded_image)
-            compGesture = get_comp_move()
-            winner = calculate_game_state(compGesture, playerGesture)
+            photo_url = new_photo.get("photoDataUrl", None)
+            decoded_image_main = decode_photo_data_url(photo_url)
+            player_gesture = analyze_image(decoded_image_main)
+            comp_gesture = get_comp_move()
+            winner = calculate_game_state(comp_gesture, player_gesture)
             to_store = {
-                "playerGesture": playerGesture,
-                "compGesture": compGesture,
+                "playerGesture": player_gesture,
+                "compGesture": comp_gesture,
                 "winner": winner,
                 "image": photo_url,
             }
