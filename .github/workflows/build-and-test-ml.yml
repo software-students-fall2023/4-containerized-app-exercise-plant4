@@ -21,5 +21,5 @@ jobs:
         docker-compose up --build -d
       working-directory: .
 
-#   - name: Run Tests
-#   TBD
+    - name: Run Tests
+      run: docker build -t mltest -f machine_learning_client/tests/Dockerfile.test . && docker run mltest
