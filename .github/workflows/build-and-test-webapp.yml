@@ -21,9 +21,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build Docker image
-      run: docker build -t web_app -f web_app/Dockerfile .
-      working-directory: .
-
+      run: |
+        cd web_app
+        docker-compose up --build -d
+      
 #    - name: Run tests
      # run: |
       #  pytest web_app/tests

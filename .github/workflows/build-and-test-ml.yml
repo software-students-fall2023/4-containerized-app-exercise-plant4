@@ -16,7 +16,9 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build and Run ML Client
-      run: docker build -t machine-learning-client -f machine-learning-client/Dockerfile .
+      run: |
+        cd machine-learning-client
+        docker-compose up --build -d
       working-directory: .
 
 #   - name: Run Tests
