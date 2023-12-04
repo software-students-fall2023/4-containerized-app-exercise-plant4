@@ -1,6 +1,7 @@
 name: Deploy to DO
 
 on: [push, pull_request]
+# Change this to when only done in main later
 
 jobs:
   deploy:
