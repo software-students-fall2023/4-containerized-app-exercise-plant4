@@ -1,4 +1,4 @@
-name: Deploy to DigitalOcean
+name: Deploy to DO
 
 on: [push, pull_request]
 
@@ -23,4 +23,4 @@ jobs:
           password: ${{ secrets.SSH_PASS }}
           script: |
             ls
-            git pull origin main
+            # from here... do something 
