@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
-import pymongo.errors
 
 app = Flask(__name__)
 
@@ -23,11 +22,23 @@ collection = db["mycollection"]
 
 @app.route("/")
 def index():
+    """
+    This will render the index.html template for the main page.
+
+    Returns:
+        str: Rendeed HTML content.
+    """
     return render_template("index.html")
 
 
 @app.route("/save_photo", methods=["POST"])
 def save_photo():
+    """
+    Send the initial unprocessed image to MongoDB.
+
+    Returns:
+        str: Message saying that send was successful.
+    """
     data = request.json
     photo_data_url = data.get("photoDataUrl")
 
@@ -39,6 +50,12 @@ def save_photo():
 
 @app.route("/view_data")
 def view_data():
+    """
+    This will render the view_data.html template which shows the results after the ML client.
+
+    Returns:
+        str: Rendered HTML content.
+    """
     # THIS NEEDS TO BE CHANGED EVENTUALLY EVEN ML DATA IS RETURNED!!!
     collection2 = db["mlresults"]
     data_from_mongo = list(collection2.find())
