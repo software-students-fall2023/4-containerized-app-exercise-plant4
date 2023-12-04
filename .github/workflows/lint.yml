@@ -17,11 +17,10 @@ jobs:
           python -m pip install pipenv
           pipenv sync --dev --python $(which python)
           pipenv shell --fancy --python $(which python)
-      - name: Lint with pylint
-        if: ${{ hashFiles('**/*.py') != '' }}
-        run: |
-          pipenv run pylint **/*.py
       - name: Format with black
         if: ${{ hashFiles('**/*.py') != '' }}
         run: |
           pipenv run black --diff --check .
+      - name: Lint with pylint
+        if: ${{ hashFiles('**/*.py') != '' }}
+        run: pipenv run pylint **/*.py
