@@ -20,6 +20,6 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: root
-          password: ${{ secrets.SSH_PASSW }}
+          password: ${{ secrets.SSH_PASS }}
           script: |
             ls
