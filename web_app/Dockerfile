@@ -4,7 +4,7 @@ FROM python:3.12.0
 # Set the working directory to /app
 WORKDIR /web_app
 
-COPY requirements.txt .
+COPY /web_app/requirements.txt .
 
 # Install any dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
@@ -14,5 +14,3 @@ COPY . .
 
 # Specify the command to run on container start
 CMD ["python", "app.py"]
-
-
