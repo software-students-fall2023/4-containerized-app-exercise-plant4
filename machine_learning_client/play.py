@@ -2,7 +2,8 @@ import cv2
 import mediapipe
 import random
 from bson import ObjectId
-#decode
+
+# decode
 import base64
 from io import BytesIO
 from PIL import Image
@@ -15,6 +16,7 @@ wins = {"Rock": "Scissors", "Paper": "Rock", "Scissors": "Paper"}
 
 # Check if MongoDB-related imports should be included
 import os
+
 if os.environ.get("CONNECT_TO_MONGODB", "").lower() == "true":
     from flask import Flask
     from pymongo import MongoClient
@@ -55,6 +57,7 @@ if os.environ.get("CONNECT_TO_MONGODB", "").lower() == "true":
             f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}",
             flush=True,
         )
+
 else:
     # Define placeholders or mock functions when not connecting to MongoDB
     app = None
@@ -68,8 +71,10 @@ else:
     def print_one(document):
         pass
 
+
 # ---------------- GAME ------------------
 # decode
+
 
 def decode_photo_data_url(photo_data_url):
     _, encoded_data = photo_data_url.split(",", 1)
@@ -115,9 +120,21 @@ def get_finger_status(hands_module, hand_landmarks, finger_name):
 
 def get_thumb_status(hands_module, hand_landmarks):
     try:
-        thumb_tip_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_TIP].x
-        thumb_mcp_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_MCP].x
-        thumb_ip_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_IP].x
+        thumb_tip_x = (
+            hand_landmarks.multi_hand_landmarks[0]
+            .landmark[hands_module.HandLandmark.THUMB_TIP]
+            .x
+        )
+        thumb_mcp_x = (
+            hand_landmarks.multi_hand_landmarks[0]
+            .landmark[hands_module.HandLandmark.THUMB_MCP]
+            .x
+        )
+        thumb_ip_x = (
+            hand_landmarks.multi_hand_landmarks[0]
+            .landmark[hands_module.HandLandmark.THUMB_IP]
+            .x
+        )
 
         return thumb_tip_x > thumb_ip_x > thumb_mcp_x
     except (AttributeError, IndexError):
@@ -189,9 +206,9 @@ if __name__ == "__main__":
                 docCt += 1
                 latest_document = res[0]
                 latest_document_id = str(latest_document["_id"])
-                new_photo =latest_document
+                new_photo = latest_document
             else:
-                new_photo =None  # or any other value indicating no result
+                new_photo = None  # or any other value indicating no result
 
         except Exception as e:
             print(f"Error getting new input: {e}")
