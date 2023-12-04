@@ -5,6 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ML Rock Paper Scissors</title>
     <a href="{{ url_for('view_data') }}">View Results</a>
+    <style>
+        body {
+            background-color: #9BC59D; 
+            color: #271F30; 
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #a46135; 
+        }
+
+        p {
+            color: #271F30; 
+        }
+
+        a {
+            color: #75846c; 
+        }
+
+        video {
+            border: 2px solid #6C5A49; 
+        }
+
+        button {
+            background-color: #D0FCB3; 
+            color: #271F30; 
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        canvas {
+            border: 2px solid #6C5A49; 
+            margin-top: 10px;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('video');
