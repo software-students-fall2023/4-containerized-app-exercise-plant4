@@ -6,8 +6,6 @@ import numpy as np
 # # # test_play.py
 # from unittest.mock import Mock, patch
 
-import sys
-import os
 # # sys.path.append('../')  # Adjust the path accordingly
 # print("Current working directory:", os.getcwd())
 # print("Contents of the current directory:", os.listdir())
@@ -52,7 +50,6 @@ def test_analyze_image(mock_hands):
     move = analyze_image(decoded_image)
     assert move == "UNKNOWN"
 
-@staticmethod
 def create_mock_new_photo(photo_data_url):
     return {"photoDataUrl": photo_data_url}
 
