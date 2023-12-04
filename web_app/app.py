@@ -4,6 +4,7 @@ Backend for the web app.
 
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
+import pymongo
 
 app = Flask(__name__)
 
@@ -69,7 +70,7 @@ def view_data():
     """
     # THIS NEEDS TO BE CHANGED EVENTUALLY EVEN ML DATA IS RETURNED!!!
     collection2 = db["mlresults"]
-    data_from_mongo = list(collection2.find())
+    data_from_mongo = list(collection2.find().sort("_id", pymongo.DESCENDING))
 
     return render_template("view_data.html", data=data_from_mongo)
 

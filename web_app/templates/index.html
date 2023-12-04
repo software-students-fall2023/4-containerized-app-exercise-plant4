@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webcam Photo App</title>
-    <a href="{{ url_for('view_data') }}">View Data</a>
+    <title>ML Rock Paper Scissors</title>
+    <a href="{{ url_for('view_data') }}">View Results</a>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('video');
@@ -62,10 +62,11 @@
     </script>
 </head>
 <body>
-    <h1>Webcam Photo App</h1>
+    <h1>Welcome to Hand Battle Ground</h1>
+    <p>Ever wanted to play Rock, Paper, Scissors with your computer using your hands? Now you can! Simply click "Capture Photo" and then "Send & Process". You will then be able to see the result of the match, along with previous matches, by clicking "View Results". Be sure to allow your browser to access yur webcam.</p>
     <video id="video" width="640" height="480" autoplay></video>
     <button id="capture">Capture Photo</button>
     <canvas id="canvas" width="640" height="480"></canvas>
-    <button id="save">Save to MongoDB</button>
+    <button id="save">Send & Process</button>
 </body>
 </html>
