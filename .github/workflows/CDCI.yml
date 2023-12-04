@@ -17,7 +17,7 @@ jobs:
 
       - name: Docker Login and Deploy
         run: |
-          docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DO_TOKEN}}
+          echo "${{secrets.DO_TOKEN}}" | docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
           ls
 #          cd 4-containerized-app-exercise-plant4/
 #          docker-compose pull
