@@ -24,7 +24,5 @@ jobs:
       run: docker build -t web_app -f web_app/Dockerfile .
       working-directory: .
 
-#    - name: Run tests
-     # run: |
-      #  pytest web_app/tests
-
+    - name: Run tests
+      run: docker run web_app pytest web_app/tests/
