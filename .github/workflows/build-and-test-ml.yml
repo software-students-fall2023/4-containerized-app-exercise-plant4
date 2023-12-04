@@ -17,7 +17,7 @@ jobs:
 
     - name: Build and Run ML Client
       run: |
-        cd machine-learning-client
+        cd machine_learning_client
         docker-compose up --build -d
       working-directory: .
 

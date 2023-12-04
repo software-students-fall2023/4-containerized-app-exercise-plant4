@@ -21,6 +21,6 @@ jobs:
 
     - name: Deploy ML Client to Digital Ocean
       run: |
-        cd machine-learning-client
+        cd machine_learning_client
         docker-compose down
         docker-compose -f docker-compose.prod.yml up --build -d
