@@ -22,7 +22,7 @@ jobs:
 
     - name: Build Docker image
       run: docker build -t web_app -f web_app/Dockerfile .
-      working-directory: ./web_app
+      working-directory: .
 
 #    - name: Run tests
      # run: |
