@@ -22,4 +22,4 @@ jobs:
       working-directory: .
 
     - name: Run Tests
-      run: docker build -t mltest -f tests/Dockerfile.test . && docker run mltest
+      run: docker build -t mltest -f machine_learning_client/tests/Dockerfile.test . && docker run mltest
