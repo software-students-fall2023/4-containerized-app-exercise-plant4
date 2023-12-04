@@ -75,8 +75,8 @@ def print_collection_contents():
 #        image_base64_content = document.get("image", None)
 
         print(
-            f"Player Gesture: {player_gesture_content}, 
-            Comp Gesture: {comp_gesture_content}, Winner: {winner_content}"
+            f"Player Gesture: {player_gesture_content},"
+            f"Comp Gesture: {comp_gesture_content}, Winner: {winner_content}"
         )
 
 def print_one(document):
@@ -92,8 +92,8 @@ def print_one(document):
     # image_base64_content_one = document.get("image", None)
 
     print(
-        f"Player Gesture: {player_gesture_content_one}, 
-        Comp Gesture: {comp_gesture_content_one}, Winner: {winner_content_one}",
+        f"Player Gesture: {player_gesture_content_one},"
+        f"Comp Gesture: {comp_gesture_content_one}, Winner: {winner_content_one}",
         flush=True,
     )
 
