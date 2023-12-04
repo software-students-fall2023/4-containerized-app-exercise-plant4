@@ -21,4 +21,4 @@ jobs:
 
     - name: Run Tests
       run: |
-        docker exec -it ml_client pytest
+        docker exec -it machine-learning-client pytest
