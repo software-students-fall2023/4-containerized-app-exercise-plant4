@@ -1,9 +1,13 @@
 import cv2
 import mediapipe
 import random
+import time
+import json
+from bson import ObjectId
 
 moves = ["Rock", "Paper", "Scissors"]
 wins = {"Rock": "Scissors", "Paper": "Rock", "Scissors": "Paper"}
+docCt = 0
 
 # ---------------- DB -----------------
 
@@ -16,6 +20,7 @@ app = Flask(__name__)
 
 @retry(pymongo.errors.ServerSelectionTimeoutError, delay=1, tries=30)
 def connect_to_mongo():
+    print("connected", flush=True)
     return MongoClient("mongodb://mongodb:27017/")
 
 # MongoDB configuration
@@ -23,11 +28,17 @@ client = connect_to_mongo()
 db = client["mydatabase"]
 
 # Check if the collection exists
-if "mycollection" not in db.list_collection_names():
+if "mlresults" not in db.list_collection_names():
     # Create the collection if it doesn't exist
+    db.create_collection("mlresults")
+collection = db["mlresults"]
+
+#check if the collection exists
+if "mycollection" not in db.list_collection_names():
+    #create the collection if it doesn't exist
     db.create_collection("mycollection")
 
-collection = db["mycollection"]
+collection_raw = db["mycollection"]
 
 def insert_result_to_db(result):
     collection.insert_one(result)
@@ -45,17 +56,50 @@ def print_collection_contents():
 
         print(f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}")
 
+def print_one(document):
+        player_gesture = document.get('playerGesture', 'N/A')
+        comp_gesture = document.get('compGesture', 'N/A')
+        winner = document.get('winner', 'N/A')
+        image_base64 = document.get('image', None)
 
+        print(f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}", flush=True)
+
+def get_new_input():
+    global docCt
+    try:
+        res = collection_raw.find().sort("_id", -1)
+
+        if collection_raw.count_documents({}) > docCt:
+            docCt += 1
+            latest_document = res[0]
+            latest_document_id = str(latest_document['_id'])
+            return latest_document
+        else:
+            return None  # or any other value indicating no result
+
+    except Exception as e:
+        print(f"Error getting new input: {e}")
+        return None
+    
+        
+def print_raw_collection_contents():
+    cursor = collection_raw.find()
+
+    print("Contents of the RAW collection:")
+    for document in cursor:
+        # Use get() method to safely access the fields
+        id = document.get('_id', 'N/A')
+        print(f"id: {id}")
 
 # ---------------- GAME ------------------
-
+# decode
 import base64
 from io import BytesIO
 from PIL import Image
 import numpy as np
 
 def decode_photo_data_url(photo_data_url):
-    _, encoded_data = url.split(',', 1)
+    _, encoded_data = photo_data_url.split(',', 1)
 
     # Decode the Base64-encoded data
     image_data = base64.b64decode(encoded_data)
@@ -63,11 +107,6 @@ def decode_photo_data_url(photo_data_url):
     image_array = np.frombuffer(image_data, dtype=np.uint8)
     frame = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
     return frame
-
-# Example usage:
-
-# Now, 'decoded_image' contains the image in a format that OpenCV can handle
-
 
 # ---------------
 
@@ -151,29 +190,19 @@ def analyze_image(decoded_image):
     return move
 
 if __name__ == "__main__":
-    # import json
-    # with open('message.txt', 'r') as file:
-    #     file_content = file.read()
-
-    # # Parse the JSON content
-    # json_data = json.loads(file_content)
-
-    # # Access and print the content of the 'PhotoUrl' key
-    # photoBase64 = json_data["photoDataUrl"]
-
-
-    with open('url.txt', 'r') as file:
-        url = file.read()
-
-    decoded_image = decode_photo_data_url(url)
-    playerGesture = analyze_image(decoded_image)
-    compGesture = get_comp_move()
-    winner = calculate_game_state(compGesture, playerGesture)
-
-    insert_result_to_db({"playerGesture": playerGesture, 
-                         "compGesture": compGesture,
-                         "winner": winner,
-                         "image": url})
-
-    # print("Final recognized gesture:", playerGesture)
-    print_collection_contents()
+    while True:
+        new_photo = get_new_input()
+        if new_photo:
+            photo_url = new_photo["photoDataUrl"]
+            decoded_image = decode_photo_data_url(photo_url)
+            playerGesture = analyze_image(decoded_image)
+            compGesture = get_comp_move()
+            winner = calculate_game_state(compGesture, playerGesture)
+            to_store = {"playerGesture": playerGesture, 
+                        "compGesture": compGesture,
+                        "winner": winner,
+                        "image": photo_url}
+            insert_result_to_db(to_store)
+            print_one(to_store)
+        # Sleep or wait for some time before querying again to avoid continuous polling
+        # time.sleep(2)
