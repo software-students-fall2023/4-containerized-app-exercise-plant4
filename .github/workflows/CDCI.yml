@@ -1,0 +1,24 @@
+name: Deploy to DigitalOcean
+
+on: [push, pull_request]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.8.5
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8.5
+
+      - name: Docker Login and Deploy
+        run: |
+          docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DO_TOKEN}}
+          ls
+#          cd 4-containerized-app-exercise-plant4/
+#          docker-compose pull
+#          docker-compose down
