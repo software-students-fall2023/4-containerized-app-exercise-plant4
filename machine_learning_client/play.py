@@ -1,94 +1,75 @@
 import cv2
 import mediapipe
 import random
-import time
-import json
 from bson import ObjectId
+#decode
+import base64
+from io import BytesIO
+from PIL import Image
+import numpy as np
 
 moves = ["Rock", "Paper", "Scissors"]
 wins = {"Rock": "Scissors", "Paper": "Rock", "Scissors": "Paper"}
 
 # ---------------- DB -----------------
 
-from flask import Flask, render_template, request, redirect, url_for
-from pymongo import MongoClient
-import pymongo.errors
+# Check if MongoDB-related imports should be included
+import os
+if os.environ.get("CONNECT_TO_MONGODB", "").lower() == "true":
+    from flask import Flask
+    from pymongo import MongoClient
 
-app = Flask(__name__)
+    app = Flask(__name__)
 
+    def connect_to_mongo():
+        print("connected", flush=True)
+        return MongoClient("mongodb://mongodb:27017/")
 
-def connect_to_mongo():
-    print("connected", flush=True)
-    return MongoClient("mongodb://mongodb:27017/")
+    # MongoDB configuration
+    client = connect_to_mongo()
+    db = client["mydatabase"]
 
+    # Check if the collection exists
+    if "mlresults" not in db.list_collection_names():
+        # Create the collection if it doesn't exist
+        db.create_collection("mlresults")
+    collection = db["mlresults"]
 
-# MongoDB configuration
-client = connect_to_mongo()
-db = client["mydatabase"]
+    # check if the collection exists
+    if "mycollection" not in db.list_collection_names():
+        # create the collection if it doesn't exist
+        db.create_collection("mycollection")
 
-# Check if the collection exists
-if "mlresults" not in db.list_collection_names():
-    # Create the collection if it doesn't exist
-    db.create_collection("mlresults")
-collection = db["mlresults"]
+    collection_raw = db["mycollection"]
 
-# check if the collection exists
-if "mycollection" not in db.list_collection_names():
-    # create the collection if it doesn't exist
-    db.create_collection("mycollection")
+    def insert_result_to_db(result):
+        collection.insert_one(result)
 
-collection_raw = db["mycollection"]
-
-
-def insert_result_to_db(result):
-    collection.insert_one(result)
-
-
-def print_collection_contents():
-    cursor = collection.find()
-
-    print("Contents of the MongoDB collection:")
-    for document in cursor:
-        # Use get() method to safely access the fields
+    def print_one(document):
         player_gesture = document.get("playerGesture", "N/A")
         comp_gesture = document.get("compGesture", "N/A")
         winner = document.get("winner", "N/A")
         image_base64 = document.get("image", None)
 
         print(
-            f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}"
+            f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}",
+            flush=True,
         )
+else:
+    # Define placeholders or mock functions when not connecting to MongoDB
+    app = None
+    db = None
+    collection = None
+    collection_raw = None
 
+    def insert_result_to_db(result):
+        pass
 
-def print_one(document):
-    player_gesture = document.get("playerGesture", "N/A")
-    comp_gesture = document.get("compGesture", "N/A")
-    winner = document.get("winner", "N/A")
-    image_base64 = document.get("image", None)
-
-    print(
-        f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}",
-        flush=True,
-    )
-
-
-def print_raw_collection_contents():
-    cursor = collection_raw.find()
-
-    print("Contents of the RAW collection:")
-    for document in cursor:
-        # Use get() method to safely access the fields
-        id = document.get("_id", "N/A")
-        print(f"id: {id}")
-
+    def print_one(document):
+        pass
 
 # ---------------- GAME ------------------
 # decode
-import base64
-from io import BytesIO
-from PIL import Image
-import numpy as np
-
 
 def decode_photo_data_url(photo_data_url):
     _, encoded_data = photo_data_url.split(",", 1)
@@ -226,5 +207,3 @@ if __name__ == "__main__":
             }
             insert_result_to_db(to_store)
             print_one(to_store)
-        # Sleep or wait for some time before querying again to avoid continuous polling
-        # time.sleep(2)

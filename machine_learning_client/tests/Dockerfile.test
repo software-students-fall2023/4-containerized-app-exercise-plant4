@@ -1,0 +1,24 @@
+
+# Use an official Python runtime as a parent image
+FROM python:3.8-slim
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy the project files into the container
+COPY .. .
+
+# Set an environment variable to determine whether to connect to MongoDB
+# Set to false to skip MongoDB-related parts during tests
+ENV CONNECT_TO_MONGODB false
+
+RUN apt-get update && \
+    apt-get install -y libgl1-mesa-glx libglib2.0-0
+
+RUN pip3 install --no-cache-dir -r requirements.txt
+# # Install any needed packages specified in requirements.txt
+RUN pip install pytest
+
+# Run pytest when the container launches
+CMD ["pytest"]
+
