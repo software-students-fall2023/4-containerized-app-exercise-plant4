@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Photo App</title>
+    <a href="{{ url_for('view_data') }}">View Data</a>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const captureButton = document.getElementById('capture');
+            const saveButton = document.getElementById('save');
+            let stream;
+
+            // Access webcam
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((mediaStream) => {
+                    video.srcObject = mediaStream;
+                    stream = mediaStream;
+                })
+                .catch((error) => {
+                    console.error('Error accessing webcam:', error);
+                });
+
+            // Capture photo from webcam
+            captureButton.addEventListener('click', () => {
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            });
+
+            // Save photo to MongoDB
+            saveButton.addEventListener('click', () => {
+                const photoDataUrl = canvas.toDataURL('image/png');
+
+                // Send photo to backend for saving to MongoDB
+                fetch('/save_photo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ photoDataUrl }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Photo saved to MongoDB:', data);
+                })
+                .catch((error) => {
+                    console.error('Error saving photo:', error);
+                });
+            });
+
+            // Stop webcam when leaving the page
+            window.addEventListener('beforeunload', () => {
+                if (stream) {
+                    stream.getTracks().forEach((track) => {
+                        track.stop();
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Webcam Photo App</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="capture">Capture Photo</button>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <button id="save">Save to MongoDB</button>
+</body>
+</html>

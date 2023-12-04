@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Data</title>
+</head>
+<body>
+    <h1>View Data</h1>
+    <a href="{{ url_for('index') }}">Back to Index</a>
+    <ul>
+        {% for item in data %}
+            {% if item.processed %}  <!-- Check if 'processed' is True -->
+                <li>
+                    <strong>Processed:</strong> {{ item.processed }}<br> 
+                    <strong>Player Gesture:</strong> {{ item.playerGesture }}<br>
+                    <strong>Computer Gesture:</strong> {{ item.compGesture }}<br>
+                    <strong>Winner:</strong> {{ item.winner }}<br>
+                    <strong>Image:</strong> <img src="{{ item.image }}" alt="Image Viewer"><br>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</body>
+</html>
