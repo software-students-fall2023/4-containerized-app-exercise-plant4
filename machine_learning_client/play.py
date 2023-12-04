@@ -114,11 +114,15 @@ def get_finger_status(hands_module, hand_landmarks, finger_name):
 
 
 def get_thumb_status(hands_module, hand_landmarks):
-    thumb_tip_x = hand_landmarks.landmark[hands_module.HandLandmark.THUMB_TIP].x
-    thumb_mcp_x = hand_landmarks.landmark[hands_module.HandLandmark.THUMB_TIP - 2].x
-    thumb_ip_x = hand_landmarks.landmark[hands_module.HandLandmark.THUMB_TIP - 1].x
+    try:
+        thumb_tip_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_TIP].x
+        thumb_mcp_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_MCP].x
+        thumb_ip_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_IP].x
 
-    return thumb_tip_x > thumb_ip_x > thumb_mcp_x
+        return thumb_tip_x > thumb_ip_x > thumb_mcp_x
+    except (AttributeError, IndexError):
+        # Handle cases where landmarks are not detected or not present
+        return False
 
 
 def analyze_image(decoded_image):
