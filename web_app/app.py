@@ -1,7 +1,18 @@
+"""
+Backend for the web app.
+"""
+
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
 
 app = Flask(__name__)
+
+"""
+    This will attempt connect to the database.
+
+    Returns:
+        client: MongoDB client.
+    """
 
 
 def connect_to_mongo():
