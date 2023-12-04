@@ -50,7 +50,6 @@ def test_analyze_image(mock_hands):
     move = analyze_image(decoded_image)
     assert move == "UNKNOWN"
 
-@staticmethod
 def create_mock_new_photo(photo_data_url):
     return {"photoDataUrl": photo_data_url}
 
