@@ -1,20 +1,22 @@
+"""
+Rock paper scissors machine learning client that analyzes an image (in base64),
+recognizes the hand gesture, plays it against a random computer gesture, and outputs
+the result.
+"""
+
+import os
 import cv2
 import mediapipe
 import random
-from bson import ObjectId
 #decode
 import base64
-from io import BytesIO
-from PIL import Image
 import numpy as np
 
 moves = ["Rock", "Paper", "Scissors"]
 wins = {"Rock": "Scissors", "Paper": "Rock", "Scissors": "Paper"}
 
 # ---------------- DB -----------------
-
 # Check if MongoDB-related imports should be included
-import os
 if os.environ.get("CONNECT_TO_MONGODB", "").lower() == "true":
     from flask import Flask
     from pymongo import MongoClient
@@ -45,16 +47,16 @@ if os.environ.get("CONNECT_TO_MONGODB", "").lower() == "true":
     def insert_result_to_db(result):
         collection.insert_one(result)
 
-    def print_one(document):
-        player_gesture = document.get("playerGesture", "N/A")
-        comp_gesture = document.get("compGesture", "N/A")
-        winner = document.get("winner", "N/A")
-        image_base64 = document.get("image", None)
+    # def print_one(document):
+    #     player_gesture = document.get("playerGesture", "N/A")
+    #     comp_gesture = document.get("compGesture", "N/A")
+    #     winner = document.get("winner", "N/A")
+    #     image_base64 = document.get("image", None)
 
-        print(
-            f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}",
-            flush=True,
-        )
+    #     print(
+    #         f"Player Gesture: {player_gesture}, Comp Gesture: {comp_gesture}, Winner: {winner}",
+    #         flush=True,
+    #     )
 else:
     # Define placeholders or mock functions when not connecting to MongoDB
     app = None
@@ -106,18 +108,35 @@ def calculate_game_state(comp, move):
 def get_finger_status(hands_module, hand_landmarks, finger_name):
     finger_id_map = {"INDEX": 8, "MIDDLE": 12, "RING": 16, "PINKY": 20}
 
-    finger_tip_y = hand_landmarks.landmark[finger_id_map[finger_name]].y
-    finger_dip_y = hand_landmarks.landmark[finger_id_map[finger_name] - 1].y
-    finger_mcp_y = hand_landmarks.landmark[finger_id_map[finger_name] - 2].y
+    finger_tip_y = hand_landmarks.landmark[
+        finger_id_map[finger_name]
+    ].y
+
+    finger_dip_y = hand_landmarks.landmark[
+        finger_id_map[finger_name] - 1
+    ].y
+
+    finger_mcp_y = hand_landmarks.landmark[
+        finger_id_map[finger_name] - 2
+    ].y
 
     return finger_tip_y < finger_mcp_y
 
 
 def get_thumb_status(hands_module, hand_landmarks):
     try:
-        thumb_tip_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_TIP].x
-        thumb_mcp_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_MCP].x
-        thumb_ip_x = hand_landmarks.multi_hand_landmarks[0].landmark[hands_module.HandLandmark.THUMB_IP].x
+        thumb_tip_x = hand_landmarks.multi_hand_landmarks[0].landmark[
+            hands_module.HandLandmark.THUMB_TIP
+        ].x
+
+        thumb_mcp_x = hand_landmarks.multi_hand_landmarks[0].landmark[
+            hands_module.HandLandmark.THUMB_MCP
+        ].x
+
+        thumb_ip_x = hand_landmarks.multi_hand_landmarks[0].landmark[
+            hands_module.HandLandmark.THUMB_IP
+        ].x
+
 
         return thumb_tip_x > thumb_ip_x > thumb_mcp_x
     except (AttributeError, IndexError):
@@ -210,4 +229,4 @@ if __name__ == "__main__":
                 "image": photo_url,
             }
             insert_result_to_db(to_store)
-            print_one(to_store)
+            # print_one(to_store)

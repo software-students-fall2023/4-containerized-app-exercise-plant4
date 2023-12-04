@@ -1,13 +1,14 @@
 import pytest
 from unittest.mock import patch, MagicMock, Mock
-import cv2
-import mediapipe
+# import cv2
+# import mediapipe
 import numpy as np
+import json
 # # # test_play.py
 # from unittest.mock import Mock, patch
 
-import sys
-import os
+# import sys
+# import os
 # # sys.path.append('../')  # Adjust the path accordingly
 # print("Current working directory:", os.getcwd())
 # print("Contents of the current directory:", os.listdir())
@@ -58,7 +59,7 @@ def create_mock_new_photo(photo_data_url):
 
 def test_decode_photo_data_url():
     # Assume 'url.txt' contains the Base64-encoded image URL
-    with open("machine_learning_client/url.txt", "r") as file:
+    with open("url.txt", "r") as file:
         photo_url = file.read()
 
     expected_frame = Mock()
@@ -68,18 +69,15 @@ def test_decode_photo_data_url():
     mock_imdecode.assert_called_once()
     assert frame == expected_frame
 
-
-
 def test_integration():
     # Integration test using real data
-    with open("machine_learning_client/url.txt", "r") as file:
+    with open("url.txt", "r") as file:
         photo_url = file.read()
-
-    new_photo = create_mock_new_photo(photo_url)
-    decoded_image = decode_photo_data_url(new_photo["photoDataUrl"])
+    decoded_image = decode_photo_data_url(photo_url)
     move = analyze_image(decoded_image)
 
     assert isinstance(move, str)  # Adjust based on your expectations
+
 
 # def test_get_finger_status():
 #     hands_module = Mock()
