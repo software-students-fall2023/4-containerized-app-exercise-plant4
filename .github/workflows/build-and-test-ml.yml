@@ -1,0 +1,23 @@
+name: Build and Test ML Client
+
+on: [push, pull_request]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:20.10.8
+        options: --privileged
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Build and Run ML Client
+      run: docker build -t machine-learning-client -f machine-learning-client/Dockerfile .
+      working-directory: .
+
+#   - name: Run Tests
+#   TBD
