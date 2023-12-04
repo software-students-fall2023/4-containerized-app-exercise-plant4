@@ -15,10 +15,11 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Docker Login and Deploy
-        run: |
-          echo "${{secrets.DO_TOKEN}}" | docker login -u ${{secrets.DOCKER_USERNAME}} --password-stdin
-          ls
-#          cd 4-containerized-app-exercise-plant4/
-#          docker-compose pull
-#          docker-compose down
+      - name: CICD
+        uses: appleboy/ssh-action@v0.1.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          password: ${{ secrets.SSH_PASSW }}
+          script: |
+            ls
