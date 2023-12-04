@@ -71,7 +71,6 @@ def print_collection_contents():
         player_gesture_content = document.get("playerGesture", "N/A")
         comp_gesture_content = document.get("compGesture", "N/A")
         winner_content = document.get("winner", "N/A")
-#        image_base64_content = document.get("image", None)
 
         print(
             f"Player Gesture: {player_gesture_content},"
@@ -267,6 +266,7 @@ def analyze_image(decoded_image):
                 # print("Recognized gesture: " + move)
 
     return move
+
 
 if __name__ == "__main__":
     # pylint: disable=invalid-name
