@@ -1,4 +1,6 @@
-![Workflow Status](badge link should go here)
+![ML CLIENT](https://github.com/software-students-fall2023/4-containerized-app-exercise-plant4/actions/workflows/build-and-test-ml.yml/badge.svg)
+
+![ML CLIENT](https://github.com/software-students-fall2023/4-containerized-app-exercise-plant4/actions/workflows/build-and-test-webapp.yml/badge.svg)
 
 # Hand Battle Ground
 Hand Battle Ground is an web app with machine learning feature that auto-detects the user's hand gestures their webcam to play rock paper scissors with the AI.
