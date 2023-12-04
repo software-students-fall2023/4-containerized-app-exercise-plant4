@@ -11,7 +11,7 @@ COPY . /app
 RUN apt-get update && \
     apt-get install -y libgl1-mesa-glx libglib2.0-0
 
-RUN pip3 install --no-cache-dir -r machine-learning-client/requirements.txt .
+RUN pip3 install --no-cache-dir -r machine-learning-client/requirements.txt
 
 # Run play.py when the container launches
 CMD ["python3", "play.py"]
