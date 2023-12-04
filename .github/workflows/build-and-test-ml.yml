@@ -21,7 +21,12 @@ jobs:
         docker-compose up --build -d
       working-directory: .
 
-    - name: Run Tests
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
       run: |
-        pytest
-  #   TBD
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
