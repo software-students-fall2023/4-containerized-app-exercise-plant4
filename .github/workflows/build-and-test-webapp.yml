@@ -22,7 +22,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        cd web-app
+        cd web_app
         docker-compose up --build -d
       
 #    - name: Run tests
