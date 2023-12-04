@@ -6,15 +6,9 @@ This module implements a Rock, Paper, Scissors game using hand gestures.
 import random
 import base64
 import mediapipe
-# import time
-# import json
-# from bson import ObjectId
 from flask import Flask
 import pymongo
 from pymongo import MongoClient
-# import pymongo.errors
-# from io import BytesIO
-# from PIL import Image
 import cv2
 import numpy as np
 
@@ -25,6 +19,7 @@ wins = {"Rock": "Scissors", "Paper": "Rock", "Scissors": "Paper"}
 
 app = Flask(__name__)
 
+
 def connect_to_mongo():
     """
     Connects to MongoDB and returns the client.
@@ -34,6 +29,7 @@ def connect_to_mongo():
     """
     print("connected", flush=True)
     return MongoClient("mongodb://mongodb:27017/")
+
 
 # MongoDB configuration
 client = connect_to_mongo()
@@ -52,6 +48,7 @@ if "mycollection" not in db.list_collection_names():
 
 collection_raw = db["mycollection"]
 
+
 def insert_result_to_db(result):
     """
     Inserts a result document into the MongoDB collection.
@@ -60,6 +57,7 @@ def insert_result_to_db(result):
         result (dict): Result document to be inserted.
     """
     collection.insert_one(result)
+
 
 def print_collection_contents():
     """
@@ -80,6 +78,7 @@ def print_collection_contents():
             f"Comp Gesture: {comp_gesture_content}, Winner: {winner_content}"
         )
 
+
 def print_one(document):
     """
     Prints details of a single document.
@@ -90,13 +89,12 @@ def print_one(document):
     player_gesture_content_one = document.get("playerGesture", "N/A")
     comp_gesture_content_one = document.get("compGesture", "N/A")
     winner_content_one = document.get("winner", "N/A")
-    # image_base64_content_one = document.get("image", None)
-
     print(
         f"Player Gesture: {player_gesture_content_one},"
         f"Comp Gesture: {comp_gesture_content_one}, Winner: {winner_content_one}",
         flush=True,
     )
+
 
 def print_raw_collection_contents():
     """
@@ -110,8 +108,10 @@ def print_raw_collection_contents():
         document_id = document.get("_id", "N/A")
         print(f"id: {document_id}")
 
+
 # ---------------- GAME ------------------
 # decode
+
 
 def decode_photo_data_url(photo_data_url):
     """
@@ -132,7 +132,9 @@ def decode_photo_data_url(photo_data_url):
     frame = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
     return frame
 
+
 # ---------------
+
 
 def get_comp_move():
     """
@@ -143,6 +145,7 @@ def get_comp_move():
     """
     comp = random.randint(0, 2)
     return moves[comp]
+
 
 def calculate_game_state(comp, move):
     """
@@ -166,6 +169,7 @@ def calculate_game_state(comp, move):
 
     return 2  # computer win
 
+
 def get_finger_status(hand_landmarks, finger_name):
     """
     Gets the status of a finger based on hand landmarks.
@@ -186,6 +190,7 @@ def get_finger_status(hand_landmarks, finger_name):
 
     return finger_tip_y < finger_mcp_y
 
+
 def get_thumb_status(hands_module, hand_landmarks):
     """
     Gets the status of the thumb based on hand landmarks.
@@ -202,6 +207,7 @@ def get_thumb_status(hands_module, hand_landmarks):
     thumb_ip_x = hand_landmarks.landmark[hands_module.HandLandmark.THUMB_TIP - 1].x
 
     return thumb_tip_x > thumb_ip_x > thumb_mcp_x
+
 
 def analyze_image(decoded_image):
     """
