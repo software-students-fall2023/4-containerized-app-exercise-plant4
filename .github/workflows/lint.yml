@@ -15,17 +15,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install pipenv
-          pipenv install autopep8 isort --dev
           pipenv sync --dev --python $(which python)
           pipenv shell --fancy --python $(which python)
-      - name: Format with black
-        if: ${{ hashFiles('**/*.py') != '' }}
-        run: |
-          pipenv run black .
       - name: Lint with pylint
         if: ${{ hashFiles('**/*.py') != '' }}
         run: |
-          pipenv run autopep8 --recursive --in-place --aggressive .
-          pipenv run isort .
           pipenv run pylint **/*.py
-
+      - name: Format with black
+        if: ${{ hashFiles('**/*.py') != '' }}
+        run: |
+          pipenv run black --diff --check .
