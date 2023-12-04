@@ -1,13 +1,17 @@
+"""
+This module implements a Rock, Paper, Scissors game using hand gestures.
+"""
+
 import random
+import base64
 import mediapipe
 # import time
 # import json
 # from bson import ObjectId
-from flask import Flask 
+from flask import Flask
 import pymongo
 from pymongo import MongoClient
 # import pymongo.errors
-import base64
 # from io import BytesIO
 # from PIL import Image
 import cv2
@@ -71,7 +75,8 @@ def print_collection_contents():
 #        image_base64_content = document.get("image", None)
 
         print(
-            f"Player Gesture: {player_gesture_content}, Comp Gesture: {comp_gesture_content}, Winner: {winner_content}"
+            f"Player Gesture: {player_gesture_content}, 
+            Comp Gesture: {comp_gesture_content}, Winner: {winner_content}"
         )
 
 def print_one(document):
@@ -87,7 +92,8 @@ def print_one(document):
     # image_base64_content_one = document.get("image", None)
 
     print(
-        f"Player Gesture: {player_gesture_content_one}, Comp Gesture: {comp_gesture_content_one}, Winner: {winner_content_one}",
+        f"Player Gesture: {player_gesture_content_one}, 
+        Comp Gesture: {comp_gesture_content_one}, Winner: {winner_content_one}",
         flush=True,
     )
 
@@ -159,7 +165,7 @@ def calculate_game_state(comp, move):
 
     return 2  # computer win
 
-def get_finger_status(hands_module, hand_landmarks, finger_name):
+def get_finger_status(hand_landmarks, finger_name):
     """
     Gets the status of a finger based on hand landmarks.
 
@@ -230,18 +236,16 @@ def analyze_image(decoded_image):
                 thumb_status = get_thumb_status(hands_module, hand_landmarks)
                 current_state += "1" if thumb_status else "0"
 
-                index_status = get_finger_status(hands_module, hand_landmarks, "INDEX")
+                index_status = get_finger_status(hand_landmarks, "INDEX")
                 current_state += "1" if index_status else "0"
 
-                middle_status = get_finger_status(
-                    hands_module, hand_landmarks, "MIDDLE"
-                )
+                middle_status = get_finger_status(hand_landmarks, "MIDDLE")
                 current_state += "1" if middle_status else "0"
 
-                ring_status = get_finger_status(hands_module, hand_landmarks, "RING")
+                ring_status = get_finger_status(hand_landmarks, "RING")
                 current_state += "1" if ring_status else "0"
 
-                pinky_status = get_finger_status(hands_module, hand_landmarks, "PINKY")
+                pinky_status = get_finger_status(hand_landmarks, "PINKY")
                 current_state += "1" if pinky_status else "0"
 
                 if current_state == "00000":
