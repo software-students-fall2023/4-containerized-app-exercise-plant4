@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6561a7bbd2ec3c4f72a2436b492b0b8a2e0e515404f9dad99d917b6070893252"
+            "sha256": "f0c00704f4c0508a8b8840c25d01343a7eefad71486cc8f86ce739c0628bf4f9"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.9"
+            "python_version": "3.10"
         },
         "sources": [
             {
@@ -46,6 +46,7 @@
                 "sha256:fc7f6a44d52747e65a02558e1d807c82df1d66ffa80a601862040a43ec2e3142"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.8'",
             "version": "==23.11.0"
         },
         "click": {
@@ -106,11 +107,11 @@
         },
         "platformdirs": {
             "hashes": [
-                "sha256:118c954d7e949b35437270383a3f2531e99dd93cf7ce4dc8340d3356d30f173b",
-                "sha256:cb633b2bcf10c51af60beb0ab06d2f1d69064b43abf4c185ca6b28865f3f9731"
+                "sha256:11c8f37bcca40db96d8144522d925583bdb7a31f7b0e37e3ed4318400a8e2380",
+                "sha256:906d548203468492d432bcb294d4bc2fff751bf84971fbb2c10918cc206ee420"
             ],
-            "markers": "python_version >= '3.7'",
-            "version": "==4.0.0"
+            "markers": "python_version >= '3.8'",
+            "version": "==4.1.0"
         },
         "pylint": {
             "hashes": [
@@ -118,6 +119,7 @@
                 "sha256:60ed5f3a9ff8b61839ff0348b3624ceeb9e6c2a92c514d81c9cc273da3b6bcda"
             ],
             "index": "pypi",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==3.0.2"
         },
         "tomli": {

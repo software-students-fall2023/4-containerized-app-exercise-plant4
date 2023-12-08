@@ -1,0 +1,42 @@
+name: Build and Test ML Client
+
+on: [push, pull_request]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:20.10.8
+        options: --privileged
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Build and Run ML Client
+      run: |
+        cd machine_learning_client
+        docker-compose up --build -d
+      working-directory: .
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        cd machine_learning_client
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: pytest
+
+    - name: Pytest Coverage
+      run: |
+        coverage run -m pytest
+        coverage report -m machine_learning_client/tests/test_play.py
+      

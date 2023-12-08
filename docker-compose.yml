@@ -1,0 +1,31 @@
+version: '3'
+services:
+  web:
+    build: ./web_app   
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+  mongodb:
+    image: "mongo:latest"
+    ports:
+      - "27017:27017"
+  machine-learning-client:
+    build:
+      context: ./machine_learning_client
+    ports:
+      - "8000:8000"
+    environment:
+      - CONNECT_TO_MONGODB=true  # Set to true for connecting to MongoDB
+
+  pytest-runner:
+    image: python:3.8
+    volumes:
+      - ./machine-learning-client:/app
+    working_dir: /app
+    depends_on:
+      - machine-learning-client
+    environment:
+      - CONNECT_TO_MONGODB=false  # Set to false to disable MongoDB connection during tests
+    entrypoint: ["bash", "-c"]
+    command: "pip install -r requirements.txt && pytest"
